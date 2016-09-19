@@ -1,0 +1,9 @@
+/vendor
+/node_modules
+.env
+/.idea
+.DS_Store
+.DS_Store?
+._*
+.phpstorm.meta.php
+_ide_helper.php
