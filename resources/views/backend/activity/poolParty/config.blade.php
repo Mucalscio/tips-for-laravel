@@ -1,6 +1,14 @@
-@extends('backend.activity.poolParty.sidebar')
+@extends('activity')
 
-@section('item_title')
+@section('sidebar')
+    @include('backend.activity.poolParty.sidebar')
+@endsection
+
+@section('activity_title')
+    泳池派对
+@endsection
+
+@section('operation_title')
     基本参数设置
 @endsection
 

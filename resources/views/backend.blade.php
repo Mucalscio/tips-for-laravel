@@ -29,7 +29,7 @@
                     </ul>
                 </li>
                 @if(env('APP_ENV') != 'production')
-                <li id="doc"><a href="#">开发文档</a></li>
+                <li id="docs"><a href="/backend/docs/manage">开发文档</a></li>
                 @endif
                 <li id="permission"><a href="#">权限管理</a></li>
                 <li id="logs"><a href="{{ url('backend/logs_view') }}">查看日志</a></li>

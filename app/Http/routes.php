@@ -112,10 +112,16 @@ Route::group(['prefix' => 'backend', 'middleware' => 'authBackend'], function ()
     Route::get('activity/pool_party', function(){
         return view('backend.activity.poolParty.config');
     });
+    Route::get('docs/manage', function(){
+        return view('backend.docs.manage');
+    });
+    Route::get('docs/add', function(){
+        return view('backend.docs.add');
+    });
 });
 
 /*
- * 基于session的登陆,后台
+ * 基于session的登陆,用户名密码在migrate直接写入。
  */
 Route::group(['prefix' => 'backend','namespace' => 'Auth'],function (){
     Route::get('login',function (){ return view('backend.login'); });
