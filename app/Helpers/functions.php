@@ -37,7 +37,7 @@ function newRedis()
 function newMemcached()
 {
     $memcached = new \Memcache();
-    $host = empty(env('MEMCACHED_HOST')) ? '192.168.80.198' : env('MEMCACHED_HOST');
+    $host = empty(env('MEMCACHED_HOST')) ? 'localhost' : env('MEMCACHED_HOST');
     $port = empty(env('MEMCACHED_PORT')) ? '11211' : env('MEMCACHED_PORT');
     $memcached->connect($host,$port) or die (false);
     return $memcached;

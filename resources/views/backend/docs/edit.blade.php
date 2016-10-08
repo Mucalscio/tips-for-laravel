@@ -5,6 +5,10 @@
         .common-width{
             width: 80% !important;
         }
+        .my_padding{
+            padding-left: 5px;
+            padding-right: 5px;
+        }
     </style>
     <div class="panel panel-default common-width" style="
         margin-left: auto;
@@ -72,14 +76,19 @@
                             margin-top: 30px;
                             margin-left: auto;
                             margin-right: auto;">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-5 my_padding">
                             <select id="interface_select" class="form-control" style="width: 100%;">
                             </select>
                         </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3 my_padding">
+                            <select id="category_select" class="form-control" style="width: 100%;">
+                                <option value="0">不分类</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3 my_padding">
                             <input type="text" id="interface_name" class="form-control" placeholder="请输入接口名" style="width: 100%;">
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-1 my_padding">
                             <button type="button" onclick="create_interface()" class="btn btn-default">添加</button>
                         </div>
                     </form>
@@ -161,6 +170,7 @@
                             var name = json.data.name;
                             var created_at = json.data.created_at;
                             create_category_item(id, name, created_at);
+                            create_category_select(id, name);
                             $("#category_name").val('');
                             warn('成功', "创建成功");
                             break;
@@ -183,29 +193,7 @@
 
         //获取分类列表
         if(docs_id != 0) {
-            $.ajax({
-                cache: true,
-                type: "GET",
-                url: '{{ empty($id) ? "" : url("backend/docs/category/list/".$id) }}',
-                async: true,
-                error: function (request) {
-                    alert("连接异常");
-                },
-                success: function (json) {
-                    switch (json.status) {
-                        case 1:
-                            cats = json.data.data;
-                            cats.forEach(function (cat) {
-                                create_category_item(cat.id, cat.name, cat.created_at);
-                                create_category_select(cat.id, cat.name);
-                            });
-                            break;
-                        default :
-                            warn('警告', json.data);
-                            break;
-                    }
-                }
-            });
+            init_category_select();
         }
 
         function delete_category(id) {
@@ -226,6 +214,7 @@
                     switch (json.status) {
                         case 1:
                             $('#cat'+id).remove();
+                            $('#category_select'+id).remove();
                             warn('成功','删除成功');
                             break;
                         default :
@@ -275,7 +264,7 @@
         }
 
         function create_category_select(id, name) {
-            option = '<option value="'+id+'">'+name+'</option>';
+            option = '<option id="category_select'+id+'" value="'+id+'">'+name+'</option>';
             $('#category_select').append(option);
         }
 
@@ -291,9 +280,74 @@
             interface_list.forEach(function (inter) {
                 markdown_text = $('#markdown_editor');
                 if(uri == inter.uri) {
-                    string = "### " + name + "\n";
-                    string += "- 提交方式:" + inter.method + "\n";
+                    string = "### " + name + "  \n\n";
+                    string += "- 提交方式：" + inter.method + "  \n";
+                    string += "- URL：domain/" + inter.uri + "  \n\n";
+                    if(inter.rule) {
+                        string += "请求参数：  \n\n";
+                        string += "|参数|类型|描述|临界值描述\n";
+                        string += "| ---          | ---   | ---      | ---\n";
+                        for (var key in inter.rule)
+                        {
+                            //console.log(key);
+                            rule = inter.rule[key].split('|');
+                            type = 'string';
+                            limit = '';
+                            for(var i=0; i < rule.length ; i++)
+                            {
+                                switch (rule[i]) {
+                                    case 'integer':
+                                        type = 'int';
+                                        break;
+                                    case 'image':
+                                    case 'numeric':
+                                        type = 'double';
+                                        break;
+                                    case 'file':
+                                        type = 'file';
+                                        break;
+                                    case 'array':
+                                        type = 'array';
+                                        break;
+                                    case 'boolean':
+                                        type = 'boolean';
+                                        break;
+                                }
+                            }
+
+                            string += "|  "+key+"   | "+type+" |    |   \n";
+                        }
+                    } else {
+                        string += "请求参数：无  \n\n";
+                    }
                     markdown_text.html(string);
+                }
+            });
+        }
+
+        function init_category_select() {
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: '{{ empty($id) ? "" : url("backend/docs/category/list/".$id) }}',
+                async: true,
+                error: function (request) {
+                    alert("连接异常");
+                },
+                success: function (json) {
+                    switch (json.status) {
+                        case 1:
+                            $('#interface_select').html('');
+                            cats = json.data.data;
+                            cats.forEach(function (cat) {
+                                create_category_item(cat.id, cat.name, cat.created_at);
+                                create_category_select(cat.id, cat.name);
+                            });
+                            break;
+                        default :
+                            warn('警告', json.data);
+                            break;
+                    }
                 }
             });
         }
