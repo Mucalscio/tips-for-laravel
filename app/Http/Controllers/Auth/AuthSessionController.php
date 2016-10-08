@@ -38,7 +38,7 @@ class AuthSessionController extends Controller
         $validator = Validator::make($data, $this->login_rule);
         if ($validator->fails()) {
             $error = $validator->errors()->first();
-            return response()->json( formatReturnData(-2, $error) );
+            return formatResponseData(-2, $error);
         }
         $user = User::where('email', $data['email'])->first();
         if(!empty($user->password) && Hash::check($data['password'], $user->password)) {

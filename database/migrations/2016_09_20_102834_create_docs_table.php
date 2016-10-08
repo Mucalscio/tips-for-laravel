@@ -16,7 +16,10 @@ class CreateDocsTable extends Migration
             $table->increments('id');
             $table->string('name',50);    //文档名称
             $table->string('author');   //作者
+            $table->integer('public')->default(0);;   //允许公开0或1
             $table->timestamps();
+            
+            $table->unique('name');
         });
     }
 

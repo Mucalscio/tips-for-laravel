@@ -24,12 +24,20 @@
                         <li><a href="/backend/activity/badminton">羽毛球比赛</a></li>
                         <li class="divider"></li>
                         <li><a href="/backend/activity/pool_party">泳池派对</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">徒步五十里</a></li>
                     </ul>
                 </li>
                 @if(env('APP_ENV') != 'production')
-                <li id="docs"><a href="/backend/docs/manage">开发文档</a></li>
+                <li id="docs" role="presentation" class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        开发文档 <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu" style="max-height: 500px;overflow: scroll;">
+                        <li><a href="/backend/docs/manage">文档列表</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/backend/docs/create_view">新增文档</a></li>
+                    </ul>
+                </li>
+
                 @endif
                 <li id="permission"><a href="#">权限管理</a></li>
                 <li id="logs"><a href="{{ url('backend/logs_view') }}">查看日志</a></li>

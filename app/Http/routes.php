@@ -17,8 +17,10 @@
  */
 
 Route::get('/', function () {
+    dump( Config::get('wechat.appId') );
     return view('welcome');
 });
+
 
 /*
  * 获取所有路由,以此做DOC文档,权限的管理等,非常不错
@@ -74,10 +76,13 @@ Route::group(['prefix' => 'permission','middleware'=>'permission'],function (){
  */
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
-
-Route::get('test', function () {
+/*
+ * 输出全部的路由信息
+ */
+Route::get('routes', function () {
     $getRoutes = Route::getRoutes();
     $routes = $getRoutes->getRoutes();
+    $data = [];
     foreach ($routes as $route) {
         $action = $route->getAction();
         $uri = $route->uri();
@@ -87,37 +92,50 @@ Route::get('test', function () {
             if($uri[0] == '/') {
                 $uri = substr($uri,1,strlen($uri-1));
             }
-            echo "class---  ".$controller[0]."</br>"
-                ."rule----  ".$controller[1]."_rule</br>"
-                ."uri-----  ".$uri."</br>"
-                ."method--  ".$methods[0]."</br></br>";
+            $class = $controller[0];
+            $object = new $class;
+            $rule = $controller[1].'_rule';
+            if(!empty($object->$rule)) {
+                $item['rule'] = $object->$rule;
+            }
+            $item['class'] = $class;
+            $item['uri'] = $uri;
+            $item['method'] = $methods[0];
+            $data[] = $item;
+            unset($item);
         }
     }
-    $class = 'App\Http\Controllers\Auth\AuthTokenController';
-    $object = new $class;
-    $rule = 'login_rule';
-    dump($object->$rule);
+    return json_encode($data);
 });
 
 /*
  * 后台路由
  */
 Route::group(['prefix' => 'backend', 'middleware' => 'authBackend'], function (){
+    //主页
     Route::get('/',function (){ return view('backend.index'); });
+
+    //日志
     Route::get('logs_view', function () { return view('backend.logs'); });
     Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
-    Route::get('activity/badminton', function(){
-        return view('backend.activity.badminton.config');
+
+    //活动
+    Route::get('activity/pool_party', function(){ return view('backend.activity.poolParty.config'); });
+
+    //文档
+    Route::group(['prefix' => 'docs','namespace' => 'Docs'], function (){
+        Route::get('manage', 'ManageController@manage_view');
+        Route::get('delete', 'ManageController@delete');
+        Route::get('create_view', 'EditController@create_view');
+        Route::get('edit_view/{id}', 'EditController@edit_view');
+        Route::post('edit/{id}', 'EditController@edit');
+        Route::post('create','EditController@create');
+        Route::get('category/list/{id}','CategoryController@category_list');
+        Route::delete('category/delete/{id}','CategoryController@delete');
+        Route::post('category/create/{id}','CategoryController@create');
+        Route::get('interface/get', 'InterfaceController@get');
     });
-    Route::get('activity/pool_party', function(){
-        return view('backend.activity.poolParty.config');
-    });
-    Route::get('docs/manage', function(){
-        return view('backend.docs.manage');
-    });
-    Route::get('docs/add', function(){
-        return view('backend.docs.add');
-    });
+    
 });
 
 /*
