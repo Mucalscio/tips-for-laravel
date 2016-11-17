@@ -17,7 +17,7 @@
  */
 
 Route::get('/', function () {
-    dump( Config::get('wechat.appId') );
+    //dump( json_encode(['type'=>1, 'data'=>"哈哈哈"]) );
     return view('welcome');
 });
 
@@ -146,4 +146,10 @@ Route::group(['prefix' => 'backend','namespace' => 'Auth'],function (){
     Route::post('login','AuthSessionController@login');
     Route::get('logout','AuthSessionController@logout');
     Route::post('register','AuthSessionController@register');
+});
+
+Route::get('t',function (){
+    for($i = 1 ; $i <= 36 ; $i +=  $i > 1 ? 3 : 2) {
+        echo $i."<br>";
+    }
 });

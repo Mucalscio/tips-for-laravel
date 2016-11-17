@@ -8,7 +8,9 @@ class ReceiveController extends Controller{
 
     public function index(Request $request)
     {
+        dump($request->all());
         dump($request->mydata);
+        dump($request->input('second'));
     }
 
 }
